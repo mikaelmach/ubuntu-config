@@ -1,0 +1,100 @@
+# i3status configuration file.
+# see "man i3status" for documentation.
+
+# It is important that this file is edited as UTF-8.
+# The following line should contain a sharp s:
+# ß
+# If the above line is not correctly displayed, fix your editor first!
+
+general {
+        colors = true
+        interval = 5
+        output_format = i3bar
+}
+
+# order += "ipv6"
+order += "wireless _first_"
+order += "ethernet _first_"
+order += "path_exists VPN"
+# order += "path_exists ZPA"
+# order += "ip VPNIP"
+order += "battery all"
+# order += "disk /"
+order += "load"
+order += "memory"
+#order += "read_file BRIGHTNESS"
+order += "volume master"
+order += "tztime local"
+
+path_exists VPN {
+     # path exists when a VPN tunnel launched by nmcli/nm-applet is active
+     path = "/proc/sys/net/ipv4/conf/tunsnx"
+}
+
+path_exists ZPA {
+     # path exists when a VPN tunnel launched by nmcli/nm-applet is active
+     path = "/proc/sys/net/ipv4/conf/tunsnx"
+}
+
+# ip VPNIP{
+#         format = "VPNIP %content%"
+#         path = "ip a | grep snx | grep inet | cut -d ' ' -f 6"
+#         max_characters = 5
+# }
+
+volume master {
+        format = "♪: %volume"
+        format_muted = "♪: muted (%volume)"
+        #device = "default"
+        device = "pulse"
+        mixer = "Master"
+        mixer_idx = 0
+}
+
+read_file BRIGHTNESS {
+        format = "BRI %content%"
+        path = "/home/mim1/.config/brightness"
+        max_characters = 5
+}
+
+wireless _first_ {
+        format_up = "W: (%quality at %essid) %ip"
+        # format_down = "W: down"
+        format_down = ""
+}
+
+ethernet _first_ {
+        format_up = "E: %ip (%speed)"
+        # format_down = "E: down"
+        format_down = ""
+}
+
+battery all {
+        format = "%status %percentage %remaining"
+        format_down = "No battery"
+        status_chr = "⚡"
+        status_bat = "🔋"
+        status_unk = "?"
+        status_full = "☻"
+        last_full_capacity = true
+
+}
+
+disk "/" {
+        format = "%avail"
+}
+
+load {
+        format = "CPU %1min"
+}
+
+memory {
+        #format = "MEM %used / %available"
+        format = "MEM %used"
+        threshold_degraded = "1G"
+        format_degraded = "MEMORY < %available"
+}
+
+tztime local {
+        format = "%Y-%m-%d %H:%M:%S"
+}

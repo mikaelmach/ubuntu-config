@@ -1,0 +1,279 @@
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-surround'
+Plugin 'git://git.wincent.com/command-t.git'
+Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'scrooloose/syntastic'
+Plugin 'vim-airline/vim-airline'
+Plugin 'kien/ctrlp.vim'
+Plugin 'junegunn/fzf'
+Plugin 'severin-lemaignan/vim-minimap'
+Plugin 'airblade/vim-gitgutter'
+Plugin 'ntpeters/vim-better-whitespace'
+Plugin 'dense-analysis/ale'
+Plugin 'valloric/youcompleteme'
+Plugin 'mattn/emmet-vim'
+Plugin 'pangloss/vim-javascript'
+Plugin 'ryanoasis/vim-devicons'
+Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plugin 'morhetz/gruvbox'
+Plugin 'untitled-ai/jupyter_ascending.vim'
+Plugin 'nathanaelkane/vim-indent-guides'
+Plugin 'iamcco/markdown-preview.nvim'
+
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+"
+
+" case insensitive command line mode
+set wildignorecase
+
+" show line numbers
+set number
+
+" highlight search results
+set hlsearch
+
+" toggle nerdtree
+nnoremap <C-n> :NERDTreeToggle<CR>
+
+"cursor stuff
+let &t_SI = "\<esc>[5 q"
+let &t_SR = "\<esc>[3 q"
+let &t_EI = "\<esc>[2 q"
+
+" set ttimeout
+" set ttimeoutlen=1
+" set listchars=tab:>-,trail:~,extends:>,precedes:<,space:.
+" set ttyfast
+"
+" source /usr/share/doc/fzf/examples/fzf.vim
+
+" nerd commenter stuff
+" filetype plugin on
+
+" tabcompletion subfolders
+" set path+=**
+
+" display all matching files with tabcompletion
+" set wildmenu
+
+" format json
+" nmap jf :%!python -m json.tool<CR>
+
+
+" syntastic config
+"set statusline+=%#warningmsg#
+"set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%*
+"
+"let g:syntastic_always_populate_loc_list = 1
+"let g:syntastic_auto_loc_list = 1
+"let g:syntastic_check_on_open = 1
+"let g:syntastic_check_on_wq = 0
+" NerdTree show hidden (dot) files
+"let NerdTreeShowHidden=1
+" NerdTree set conceal level to get rid of square brackets
+set conceallevel=3
+"autocmd Filetype json let g:conceallevel=0
+
+" NERDTrees File highlighting
+function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
+ exec 'autocmd FileType nerdtree highlight ' . a:extension .' ctermbg='. a:bg .' ctermfg='. a:fg .' guibg='. a:guibg .' guifg='. a:guifg
+ exec 'autocmd FileType nerdtree syn match ' . a:extension .' #^\s\+.*'. a:extension .'$#'
+endfunction
+
+call NERDTreeHighlightFile('jade', 'green', 'none', 'green', '#151515')
+call NERDTreeHighlightFile('ini', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('md', 'blue', 'none', '#3366FF', '#151515')
+call NERDTreeHighlightFile('yml', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('config', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('conf', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('json', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('html', 'yellow', 'none', 'yellow', '#151515')
+call NERDTreeHighlightFile('styl', 'cyan', 'none', 'cyan', '#151515')
+call NERDTreeHighlightFile('css', 'cyan', 'none', 'cyan', '#151515')
+call NERDTreeHighlightFile('coffee', 'Red', 'none', 'red', '#151515')
+call NERDTreeHighlightFile('js', 'Red', 'none', '#ffa500', '#151515')
+call NERDTreeHighlightFile('php', 'Magenta', 'none', '#ff00ff', '#151515')
+call NERDTreeHighlightFile('ds_store', 'Gray', 'none', '#686868', '#151515')
+call NERDTreeHighlightFile('gitconfig', 'Gray', 'none', '#686868', '#151515')
+call NERDTreeHighlightFile('gitignore', 'Gray', 'none', '#686868', '#151515')
+call NERDTreeHighlightFile('bashrc', 'Gray', 'none', '#686868', '#151515')
+call NERDTreeHighlightFile('bashprofile', 'Gray', 'none', '#686868', '#151515')
+
+"autocmd VimEnter * call NERDTreeHighlightFile('jade', 'green', 'none', 'green', '#151515')
+
+" NERDTrees File highlighting only the glyph/icon
+" test highlight just the glyph (icons) in nerdtree:
+autocmd filetype nerdtree highlight haskell_icon ctermbg=none ctermfg=Red guifg=#ffa500
+autocmd filetype nerdtree highlight html_icon ctermbg=none ctermfg=Red guifg=#ffa500
+autocmd filetype nerdtree highlight go_icon ctermbg=none ctermfg=Red guifg=#ffa500
+autocmd filetype nerdtree syn match haskell_icon ## containedin=NERDTreeFlags
+" if you are using another syn highlight for a given line (e.g.
+" NERDTreeHighlightFile) need to give that name in the 'containedin' for this
+" other highlight to work with it
+"autocmd filetype nerdtree syn match html_icon ## containedin=NERDTreeFlags,html
+"autocmd filetype nerdtree syn match go_icon ## containedin=NERDTreeFlags
+
+if exists('g:loaded_webdevicons')
+    call webdevicons#refresh()
+endif
+
+" you can add these colors to your .vimrc to help customizing
+
+let s:brown = "905532"
+let s:aqua =  "3AFFDB"
+let s:blue = "689FB6"
+let s:darkBlue = "44788E"
+let s:purple = "834F79"
+let s:lightPurple = "834F79"
+let s:red = "AE403F"
+let s:beige = "F5C06F"
+let s:yellow = "F09F17"
+let s:orange = "D4843E"
+let s:darkOrange = "F16529"
+let s:pink = "CB6F6F"
+let s:salmon = "EE6E73"
+let s:green = "8FAA54"
+let s:lightGreen = "31B53E"
+let s:white = "FFFFFF"
+let s:rspec_red = 'FE405F'
+let s:git_orange = 'F54D27'
+
+let g:NERDTreeExtensionHighlightColor = {} " this line is needed to avoid error
+let g:NERDTreeExtensionHighlightColor['css'] = s:blue " sets the color of css files to blue
+
+let g:NERDTreeExactMatchHighlightColor = {} " this line is needed to avoid error
+let g:NERDTreeExactMatchHighlightColor['.gitignore'] = s:git_orange " sets the color for .gitignore files
+
+let g:NERDTreePatternMatchHighlightColor = {} " this line is needed to avoid error
+let g:NERDTreePatternMatchHighlightColor['.*_spec\.rb$'] = s:rspec_red " sets the color for files ending with _spec.rb
+
+let g:WebDevIconsDefaultFolderSymbolColor = s:beige " sets the color for folders that did not match any rule
+let g:WebDevIconsDefaultFileSymbolColor = s:blue " sets the color for files that did not match any rule
+
+"let g:WebDevIconsDisableDefaultFolderSymbolColorFromNERDTreeDir = 1
+"let g:WebDevIconsDisableDefaultFileSymbolColorFromNERDTreeFile = 1
+
+let g:webdevicons_conceal_nerdtree_brackets = 1
+
+
+" allow cursor to move naturally through lines
+"nnoremap j gj
+"nnoremap k gk
+
+" syntax highlighting
+syntax on
+
+" make backspace behave normally
+set backspace=indent,eol,start
+
+" expand tab to 4 spaces
+set shiftwidth=4
+set tabstop=4
+set expandtab
+
+" correct indentation and plugins dependent on filetype
+filetype on
+filetype indent on
+filetype plugin on
+
+
+"autocmd Syntax nerdtree syntax clear NERDTreeFlags
+
+" vim-devicons stuff
+"set guifont=DroidSansMono\ Nerd\ Font\ 11
+set guifont=Droid\ Sans\ Mono\ for\ Powerline\ Nerd\ Font\ Complete
+" set guifont=Droid\ Sans\ Mono\ Nerd\ Font\ Complete
+let g:airline_powerline_fonts = 1
+
+" vim-encoding
+"set encoding=UTF-8
+
+" gruvbox stuff
+set bg=dark
+"let g:gruvbox_termcolors=256
+let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_transparent_bg=1
+autocmd vimenter * ++nested colorscheme gruvbox
+
+"colorscheme gruvbox
+"if g:colors_name == "gruvbox"
+"highlight Normal ctermbg=16 guibg=#000000
+""List other overrides here
+"endif
+
+" nerdcommenter stuff
+filetype plugin on
+
+" highlight trailing spaces
+" highlight ExtraWhitespace ctermbg=red guibg=red
+" match ExtraWhitespace /\s\+$/
+" autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+" autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+" autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+" autocmd BufWinLeave * call clearmatches()
+
+" match parenthesis
+"set DoMatchParen
+
+" search down into subfolders with tabcompletion
+set path+=**
+
+" display all matching files with tabcompletion
+set wildmenu
+
+" incremental search
+set incsearch hlsearch
+
+" user mappings
+nmap <F8> :%s/\(.*\),/\1
+nmap <F9> :%s/.*\zs,/
+nmap mf :%!python3 -m json.tool<CR>
+
+nmap gh <C-w>h
+nmap gj <C-w>j
+nmap gk <C-w>k
+nmap gl <C-w>l
+
+nnoremap j gj
+nnoremap k gk
+xnoremap j gj
+xnoremap k gk
+
+noremap <Space> 10j
+noremap <C-Space> 10k
+
+" ipynb mappings jupyter ascending
+nmap <space><space>x <Plug>JupyterExecute
+nmap <space><space>X <Plug>JupyterExecuteAll
+
+" indent guidlines activate global
+"let g:indent_guides_enable_on_vim_startup = 1
+"
+set foldmethod=syntax
