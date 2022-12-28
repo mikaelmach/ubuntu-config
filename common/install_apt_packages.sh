@@ -18,6 +18,8 @@ function install_apt_packages() {
   sudo apt update
 
   # install apt packages from requirements file
-  xargs sudo apt install -y <$requirements_file
+  xargs sudo apt install -y -qq <$requirements_file && \
+  echo "INFO: installed apt packages from $requirements_file" || \
+  echo "ERRROR: installation of install_apt_packages threw an error"
 	
   }
