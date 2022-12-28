@@ -4,18 +4,17 @@ set -Eeuo pipefail
 
 
 #######################################
-# install configs
+# setup git ssh key
 # Globals:
 # Arguments:
 #   None
 #######################################
 function setup_git_ssh_key() {
 
-	# Read Git user email for keygen
+	# read Git user email for keygen
 	read -p "Enter Git User Email: " git_user_email
 
-	# print user email and wait for confirmation
-	echo "Git User Email set to: $git_user_email"
+	# wait for confirmation
 	read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 	# generate key for given user email
