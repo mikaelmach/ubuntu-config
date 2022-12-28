@@ -19,7 +19,7 @@ function install_configs() {
 
     for key in "${!config_dict[@]}"
       do
-	local config_file_source=$key
+	local config_file_source="${pwd}/common/${key}"
 	local config_file_destination=${config_dict[$key]}
 	local config_dirname=$(dirname "${config_file_destination}")
 
@@ -27,8 +27,8 @@ function install_configs() {
 	mkdir -p $config_dirname
 	
 	# copy config file to destination
-	cp $pwd/common/$key ${config_dict[$key]} \
-        && echo "INFO: installing $config_file_source in $config_file_destination" \
-	|| echo "ERROR: $config_file_source threw and error"
+	cp $config_file_source $config_file_destination && \
+        echo "INFO: installing $config_file_source in $config_file_destination" || \
+	echo "ERROR: $config_file_source threw and error"
       done
   }
