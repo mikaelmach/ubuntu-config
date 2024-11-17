@@ -26,8 +26,8 @@ function main() {
     install_configs
     install_i3
     install_fzf
-    setup_git_ssh_key	
-	
+    setup_git_ssh_key
+
   }
 
 main

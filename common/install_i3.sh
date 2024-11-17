@@ -10,5 +10,9 @@ set -Eeuo pipefail
 #   None
 #######################################
 function install_() {
-	
+	# clone ansible playbook
+    #
+    # install ansible playbook
+    #
+    #
   }

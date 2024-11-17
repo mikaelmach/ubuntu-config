@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 set -Eeuo pipefail
 
@@ -29,3 +29,5 @@ function setup_git_ssh_key() {
 	# print ssh pub key for adding it to github
 	cat ~/.ssh/id_ed25519.pub
   }
+
+setup_git_ssh_key

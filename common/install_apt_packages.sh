@@ -11,7 +11,7 @@ set -Eeuo pipefail
 #   ${1} file containing a list of required packages
 ####################################################
 function install_apt_packages() {
-	
+
   local requirements_file=${1}
 
   # apt update
@@ -21,5 +21,5 @@ function install_apt_packages() {
   xargs sudo apt install -y -qq <$requirements_file && \
   echo "INFO: installed apt packages from $requirements_file" || \
   echo "ERRROR: installation of install_apt_packages threw an error"
-	
+
   }
