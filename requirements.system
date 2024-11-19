@@ -2,3 +2,8 @@ git
 ansible
 python3
 terminator
+vim
+openssh-server
+brightnessctl
+xbacklight
+playerctl
