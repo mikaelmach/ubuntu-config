@@ -31,12 +31,35 @@ function install_docker() {
     sudo \
         apt \
         install \
+        distutils \
         docker-ce \
         docker-ce-cli \
         containerd.io \
+        docker-compose \
         docker-buildx-plugin \
         docker-compose-plugin
+}
+    function configure_docker() {
+    # add docker group
+    #sudo groupadd docker
+
+    # add current user to docker group
+    sudo usermod -aG docker $USER
+
+    # login to new group
+    newgrp docker
+
+    # grant permissions to that user
+    sudo chmod 666 /var/run/docker.sock
+
+    # restart service
+    sudo systemctl restart docker
+
+    # smoke test
+    #docker run hello-world
+
   }
 
 prepare_docker
 install_docker
+configure_docker
