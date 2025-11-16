@@ -6,13 +6,13 @@
     user: "{{ lookup('env','USER') }}"
   roles:
     - common
-    #- docker
-    #- kubectl
-    #- k9s
-    #- helm
-    #- terraform
-    #- ohmyzsh
-    #- nerdfonts
-    #- lazyvim
-    #- tmux
-    #- terminator
+    - docker
+    - kubectl
+    - k9s
+    - helm
+    - terraform
+    - ohmyzsh
+    - nerdfonts
+    - lazyvim
+    - tmux
+    - terminator
