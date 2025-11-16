@@ -1,0 +1,14 @@
+---
+- name: Install tmux
+  apt:
+    name: tmux
+    state: present
+
+- name: Add basic tmux config
+  become: false
+  copy:
+    dest: "/home/{{ user }}/.tmux.conf"
+    content: |
+      set -g mouse on
+      setw -g mode-keys vi
+      bind r source-file ~/.tmux.conf \; display-message "Config reloaded!"

@@ -1,0 +1,200 @@
+---
+- name: Ensure required packages are installed (dependencies)
+  become: true
+  ansible.builtin.apt:
+    name:
+      - git
+      - curl
+      - unzip
+      - jq
+    state: present
+    update_cache: yes
+
+- name: Detect system architecture
+  become: false
+  ansible.builtin.command: uname -m
+  register: system_arch_raw
+  changed_when: false
+
+- name: Sanitize architecture string
+  set_fact:
+    system_arch: "{{ system_arch_raw.stdout | trim }}"
+
+- name: Map architecture to Neovim tarball suffix
+  set_fact:
+    neovim_arch_suffix: >-
+      {{
+        (
+          'x86_64' if system_arch == 'x86_64' else
+          'arm64' if system_arch == 'aarch64' else
+          'unsupported'
+        ) | trim
+      }}
+
+- name: Fail if architecture is unsupported
+  ansible.builtin.fail:
+    msg: "Unsupported architecture: {{ system_arch.stdout }}"
+  when: neovim_arch_suffix == 'unsupported'
+
+- name: Get latest Neovim release tag from GitHub
+  become: false
+  ansible.builtin.shell: |
+    curl -s https://api.github.com/repos/neovim/neovim/releases/latest | jq -r '.tag_name'
+  register: neovim_tag
+  changed_when: false
+  failed_when: neovim_tag.stdout == ""
+
+- name: Fallback to pinned version if GitHub API fails
+  set_fact:
+    neovim_tag: { "stdout": "v0.11.5" }
+  when: neovim_tag.stdout == ""
+
+- name: Set Neovim download URL
+  set_fact:
+    neovim_tar_url: "https://github.com/neovim/neovim/releases/download/{{ neovim_tag.stdout }}/nvim-linux-{{ neovim_arch_suffix }}.tar.gz"
+
+- name: Download Neovim tarball
+  become: false
+  ansible.builtin.get_url:
+    url: "{{ neovim_tar_url }}"
+    dest: "/tmp/nvim-{{ neovim_arch_suffix }}.tar.gz"
+    mode: '0644'
+
+- name: Extract Neovim archive
+  become: true
+  ansible.builtin.unarchive:
+    src: "/tmp/nvim-{{ neovim_arch_suffix }}.tar.gz"
+    dest: "/opt"
+    remote_src: yes
+
+- name: Symlink Neovim binary to /usr/local/bin
+  become: true
+  ansible.builtin.file:
+    src: "/opt/nvim-{{ neovim_arch_suffix }}/bin/nvim"
+    dest: "/usr/local/bin/nvim"
+    state: link
+    force: true
+
+- name: Ensure LazyVim config directory exists
+  become: false
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.config/nvim-LazyVim"
+    state: directory
+    mode: '0755'
+
+- name: Check if LazyVim config directory is empty
+  become: false
+  ansible.builtin.find:
+    paths: "/home/{{ user }}/.config/nvim-LazyVim"
+    file_type: any
+  register: lazyvim_contents
+
+- name: Clone LazyVim starter template
+  become: false
+  ansible.builtin.git:
+    repo: https://github.com/LazyVim/starter
+    dest: "/home/{{ user }}/.config/nvim-LazyVim"
+    version: main
+    depth: 1
+  when: lazyvim_contents.matched is defined and lazyvim_contents.matched == 0
+
+- name: Remove .git directory to detach from upstream
+  become: false
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.config/nvim-LazyVim/.git"
+    state: absent
+
+- name: Create data directory for LazyVim
+  become: false
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.local/share/nvim-LazyVim"
+    state: directory
+    mode: '0755'
+
+- name: Launch LazyVim once to trigger plugin sync (headless)
+  become: false
+  ansible.builtin.shell: |
+      export PATH=$PATH:/usr/bin:/usr/local/bin
+      NVIM_APPNAME=nvim-LazyVim nvim --headless "+Lazy! sync" +qa
+  args:
+    executable: /bin/bash
+
+- name: Ensure LazyVim config directory exists
+  become: true
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.config/nvim-LazyVim/lua/config"
+    state: directory
+    mode: '0755'
+
+- name: Set absolute line numbers in options.lua
+  become: false
+  ansible.builtin.blockinfile:
+    path: "/home/{{ user }}/.config/nvim-LazyVim/lua/config/options.lua"
+    create: yes
+    marker: "-- {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      vim.opt.number = true
+      vim.opt.relativenumber = false
+
+- name: Persist NVIM_APPNAME for LazyVim in .zshrc
+  become: false
+  ansible.builtin.lineinfile:
+    path: "/home/{{ user }}/.zshrc"
+    line: 'export NVIM_APPNAME=nvim-LazyVim'
+    regexp: '^export NVIM_APPNAME='
+    create: yes
+    state: present
+
+- name: Persist nvim path in .zshrc
+  become: false
+  ansible.builtin.lineinfile:
+    path: "/home/{{ user }}/.zshrc"
+    line: 'export PATH="/opt/nvim-linux-x86_64/bin:$PATH"'
+    regexp: '^export PATH=.*\/opt\//opt/nvim-linux-x86_64\/bin'
+    create: yes
+    state: present
+
+- name: Source .zshrc to apply NVIM_APPNAME immediately
+  become: false
+  ansible.builtin.shell: source /home/{{ user }}/.zshrc
+  args:
+    executable: /bin/bash
+
+- name: Ensure Gruvbox theme is configured in LazyVim
+  become: false
+  ansible.builtin.blockinfile:
+    path: "/home/{{ user }}/.config/nvim-LazyVim/lua/plugins/colorscheme.lua"
+    create: yes
+    marker: "-- {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      return {
+        { "ellisonleao/gruvbox.nvim" },
+        { "LazyVim/LazyVim", opts = { colorscheme = "gruvbox" } },
+      }
+    insertafter: EOF
+    state: present
+
+- name: Ensure Neo-tree <space>e binding opens from home directory
+  become: false
+  ansible.builtin.blockinfile:
+    path: "/home/{{ user }}/.config/nvim-LazyVim/lua/plugins/neotree.lua"
+    create: yes
+    marker: "-- {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      return {
+        "nvim-neo-tree/neo-tree.nvim",
+        opts = {
+          window = {
+            mappings = {
+              ["<space>e"] = function()
+                require("neo-tree.command").execute({
+                  toggle = true,
+                  dir = vim.fn.expand("/home/$USER/"),
+                })
+              end,
+            },
+          },
+        },
+      }
+    insertafter: EOF
+    state: present

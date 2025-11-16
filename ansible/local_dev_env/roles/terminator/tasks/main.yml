@@ -1,0 +1,27 @@
+---
+- name: Install Terminator
+  apt:
+    name: terminator
+    state: present
+
+- name: Add basic Terminator config
+  become: false
+  copy:
+    dest: "/home/{{ user }}/.config/terminator/config"
+    content: |
+      [global_config]
+        enabled_plugins = LaunchpadCodeURLHandler, TerminalShot
+      [keybindings]
+      [profiles]
+        [[default]]
+          font = Hack Nerd Font 12
+          use_system_font = False
+      [layouts]
+        [[default]]
+          [[[child1]]]
+            type = Terminal
+            parent = window0
+          [[[window0]]]
+            type = Window
+            parent = ""
+      [plugins]

@@ -1,0 +1,19 @@
+---
+- name: Ensure ~/.local/share/fonts directory exists
+  become: true
+  ansible.builtin.file:
+    path: "/home/{{ user  }}/.fonts"
+    state: directory
+    mode: '0755'
+
+- name: Install Nerd Fonts (Hack)
+  become: false
+  ansible.builtin.unarchive:
+    src: "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip"
+    dest: "/home/{{ user  }}/.fonts"
+    remote_src: yes
+    creates: "/home/{{ user }}/.fonts/Hack Regular Nerd Font Complete.ttf"
+
+- name: Refresh font cache
+  become: false
+  ansible.builtin.shell: fc-cache -fv

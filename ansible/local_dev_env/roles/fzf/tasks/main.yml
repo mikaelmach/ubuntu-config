@@ -1,0 +1,12 @@
+---
+- name: Install fzf
+  apt:
+    name: fzf
+    state: present
+
+- name: Install fzf shell extensions
+  become: false
+  shell: |
+    /usr/share/doc/fzf/examples/install --all
+  args:
+    creates: "/home/{{ user }}/.fzf.zsh"

@@ -1,0 +1,37 @@
+- name: Remove custom .zshrc if it exists
+  become: false
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.zshrc"
+    state: absent
+
+- name: Remove zsh-autosuggestions plugin
+  become: false
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+    state: absent
+
+- name: Remove zsh-syntax-highlighting plugin
+  become: false
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+    state: absent
+
+- name: Remove Oh My Zsh directory
+  become: false
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.oh-my-zsh"
+    state: absent
+
+- name: Reset default shell to /bin/bash
+  become: true
+  ansible.builtin.user:
+    name: "{{ user }}"
+    shell: /bin/bash
+
+- name: Uninstall Zsh package
+  become: true
+  ansible.builtin.apt:
+    name: zsh
+    state: absent
+    purge: true
+    autoremove: true
