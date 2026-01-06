@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Exit immediately if a command exits with a non-zero status
-set -euo pipefail
+set -Eeuo pipefail
 
 # Colors for output
 GREEN="\033[0;32m"

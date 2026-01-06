@@ -13,6 +13,7 @@
     - terraform
     - ohmyzsh
     - nerdfonts
-    - lazyvim
     - tmux
     - terminator
+    - ollama
+    - lazyvim

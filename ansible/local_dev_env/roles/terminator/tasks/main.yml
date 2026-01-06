@@ -4,6 +4,23 @@
     name: terminator
     state: present
 
+- name: Ensure Terminator config directory exists
+  file:
+    path: "/home/{{ lookup('env','USER') }}/.config/terminator"
+    state: directory
+    owner: "{{ lookup('env','USER') }}"
+    group: "{{ lookup('env','USER') }}"
+    mode: "0755"
+
+- name: Add basic Terminator config
+  become: true
+  copy:
+    src: config
+    dest: "/home/{{ lookup('env','USER') }}/.config/terminator/config"
+    owner: "{{ lookup('env','USER') }}"
+    group: "{{ lookup('env','USER') }}"
+    mode: "0644"
+
 - name: Add basic Terminator config
   become: false
   copy:

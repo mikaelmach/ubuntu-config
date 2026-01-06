@@ -1,0 +1,28 @@
+---
+- name: Ensure curl is installed
+  apt:
+    name: curl
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Download and run Ollama install script (non-interactive)
+  shell: |
+    export OLLAMA_SKIP_PROMPT=true
+    curl -fsSL https://ollama.com/install.sh | bash
+  args:
+    executable: /bin/bash
+
+- name: Enable Ollama service
+  systemd:
+    name: ollama
+    enabled: yes
+    state: started
+
+- name: Check if deepseek-coder model is already installed
+  command: ollama list
+  register: ollama_models
+  changed_when: false
+
+- name: Pull deepseek-coder model
+  command: ollama pull deepseek-coder
+  when: "'deepseek-coder' not in ollama_models.stdout"

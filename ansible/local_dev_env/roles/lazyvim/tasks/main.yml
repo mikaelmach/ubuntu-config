@@ -198,3 +198,36 @@
       }
     insertafter: EOF
     state: present
+
+- name: Create LazyVim plugin directory
+  file:
+    path: "/home/{{ lookup('env','USER') }}/.config/nvim-LazyVim/lua/plugins"
+    state: directory
+    owner: "{{ lookup('env','USER') }}"
+    group: "{{ lookup('env','USER') }}"
+    mode: "0755"
+
+- name: Install CodeCompanion plugin file
+  copy:
+    dest: "/home/{{ lookup('env','USER') }}/.config/nvim-LazyVim/lua/plugins/codecompanion.lua"
+    owner: "{{ lookup('env','USER') }}"
+    group: "{{ lookup('env','USER') }}"
+    mode: "0644"
+    content: |
+      return {
+        "olimorris/codecompanion.nvim",
+        dependencies = {
+          "nvim-lua/plenary.nvim",
+          "nvim-telescope/telescope.nvim",
+        },
+        config = function()
+          require("codecompanion").setup({
+            adapters = {
+              ollama = {
+                endpoint = "http://localhost:11434",
+                model = "llama3",
+              },
+            },
+          })
+        end,
+      }
